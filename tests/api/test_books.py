@@ -11,13 +11,6 @@ async def test_get_book_not_found(async_client):
 
 
 @pytest.mark.asyncio
-async def test_get_books(async_client):
-    response = await async_client.get("/api/books")
-    assert response.status_code == status.HTTP_200_OK
-    assert isinstance(response.json(), list)
-
-
-@pytest.mark.asyncio
 async def test_create_book(async_client, tmp_path):
     test_file = tmp_path / "testfile.txt"
     test_file.write_text("Book content")

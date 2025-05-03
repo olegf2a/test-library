@@ -18,21 +18,23 @@ services:
       - .env
     ports:
       - "${DATABASE__PORT}:5432"
-#  backend:
-#    build:
-#      context: backend
-#      dockerfile: Dockerfile
-#    command: python app/main.py
-#    tty: true
-#    volumes:
-#      - ./backend:/backend/:cached
-#      - ./.docker/.ipython:/root/.ipython:cached
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+#  fastapi:
+#    build: .
+#    env_file:
+#      - ./.env
 #    environment:
 #      PYTHONPATH: .
-#      DATABASE_URL: "postgresql+asyncpg://dev-user:password@postgres:5432/dev_db"
+#      DATABASE__HOSTNAME: postgres_db
+#      DATABASE__PORT: 5432
 #    depends_on:
-#      - "postgres_db"
+#      postgres_db:
+#        condition: service_healthy
 #    ports:
-#      - 8000:8000
+#      - "8008:8008"
 volumes:
   postgres_db:

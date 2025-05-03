@@ -1,7 +1,7 @@
-FROM python:3.13.2-slim-bookworm as base
+FROM python:3.12.2-slim-bookworm as base
 
 ENV PYTHONUNBUFFERED 1
-WORKDIR /build
+WORKDIR /app
 
 # Create requirements.txt file
 FROM base as poetry
@@ -31,7 +31,5 @@ RUN addgroup --gid 1001 --system uvicorn && \
     adduser --gid 1001 --shell /bin/false --disabled-password --uid 1001 uvicorn
 
 # Run init.sh script then start uvicorn
-RUN chown -R uvicorn:uvicorn /build
-CMD bash init.sh && \
-    runuser -u uvicorn -- /venv/bin/uvicorn app.main:app --app-dir /build --host 0.0.0.0 --port 8000 --workers 2 --loop uvloop
-EXPOSE 8000
+RUN chown -R uvicorn:uvicorn /app
+CMD ["bash", "-c", "bash /app/init.sh && exec runuser -u uvicorn -- /venv/bin/uvicorn app.main:app --app-dir /app --host 0.0.0.0 --port 8008"]
