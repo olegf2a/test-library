@@ -30,6 +30,7 @@ pytest-cov = "^6.0.0"
 pytest-xdist = "^3.6.1"
 ruff = "^0.9.9"
 uvicorn = { extras = ["standard"], version = "^0.34.0" }
+aiosqlite = "^0.21.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

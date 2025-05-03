@@ -1,5 +1,5 @@
 import contextlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator, AsyncIterator
 from typing import Any
 
 from sqlalchemy.engine.url import URL
@@ -22,8 +22,10 @@ class Base(DeclarativeBase):
 class DatabaseSessionManager:
     def __init__(self, host: URL, engine_kwargs: dict[str, Any] = {}):
         self._engine: AsyncEngine | None = create_async_engine(host, **engine_kwargs)
-        self._sessionmaker: Any = async_sessionmaker(
-            autocommit=False, bind=self._engine, expire_on_commit=False
+        self._sessionmaker: async_sessionmaker[AsyncSession] | None = (
+            async_sessionmaker(
+                autocommit=False, bind=self._engine, expire_on_commit=False
+            )
         )
 
     async def close(self) -> None:
@@ -64,6 +66,6 @@ class DatabaseSessionManager:
 sessionmanager = DatabaseSessionManager(get_settings().sqlalchemy_database_uri)  # type: ignore
 
 
-async def get_db_session() -> Any:
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with sessionmanager.session() as session:
         yield session
